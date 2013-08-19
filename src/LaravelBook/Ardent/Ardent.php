@@ -501,7 +501,13 @@ abstract class Ardent extends Model {
 			$customMessages = (empty($customMessages))? static::$customMessages : $customMessages;
 
 			if ($this->forceEntityHydrationFromInput || (empty($this->attributes) && $this->autoHydrateEntityFromInput)) {
-				$this->fill(Input::all());
+                // pluck only the fields which are defined in the validation rule-set
+                $attributes = array_intersect_key(Input::all(), $rules);
+        
+                //Set each given attribute on the model
+                foreach ($attributes as $key => $value) {
+                  $this->setAttribute($key, $value);
+                }
 			}
 
 			$data = $this->getAttributes(); // the data under validation
